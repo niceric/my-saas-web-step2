@@ -31,12 +31,26 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient()
 
+  // 1. Get standard Auth data
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  
+  // 2. Get the new Profile data
+  const fullName = formData.get('full_name') as string
+  const age = formData.get('age') as string
 
+  // 3. Send to Supabase
+  // We pass 'fullName' and 'age' inside the 'options.data' object.
+  // The SQL Trigger we wrote in Step 1 will look for these EXACT keys.
   const { error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        full_name: fullName,
+        age: age,
+      },
+    },
   })
 
   if (error) {
@@ -46,10 +60,9 @@ export async function signup(formData: FormData) {
 
   revalidatePath('/', 'layout')
   redirect('/dashboard')
-}   
-
+}
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
-  redirect('/login')
+  redirect('/')
 }
