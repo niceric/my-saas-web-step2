@@ -1,22 +1,22 @@
+'use client'
+
 import { login } from './actions'
 import Link from 'next/link'
+import { Navigation } from '@/src/components/navigation'
+import { SubmitButton } from '@/src/components/ui/submit-button'
+import { ErrorMessage } from '@/src/components/ui/error-message'
+import { FieldError } from '@/src/components/ui/field-error'
+import { styles } from '@/lib/styles'
+import { useActionState } from 'react'
+import type { ActionResponse } from './actions'
 
 export default function LoginPage() {
-  return (
-    // changed: flex-col to stack nav and form vertically
-    <div className="flex min-h-screen flex-col bg-gray-50">
-      
-      <header className="absolute inset-x-0 top-0 z-50">
-        <nav className="flex items-center justify-between p-6 lg:px-8 h-18" aria-label="Global">
-          <div className="flex lg:flex-1">
-            <Link href="/" className="-m-1.5 p-1.5 font-bold text-2xl text-indigo-600">
-              SuperSaaS
-            </Link>
-          </div>
-        </nav>
-      </header>
+  const [state, formAction] = useActionState<ActionResponse | undefined, FormData>(login, undefined)
 
-      {/* --- MAIN CONTENT (Centered in remaining space) --- */}
+  return (
+    <div className="flex min-h-screen flex-col bg-gray-50">
+      <Navigation />
+
       <div className="flex flex-1 flex-col items-center justify-center p-6">
         <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-md">
           <div className="text-center">
@@ -27,8 +27,10 @@ export default function LoginPage() {
               Sign in to your account
             </p>
           </div>
-          
-          <form className="mt-8 space-y-6">
+
+          <ErrorMessage message={state?.error} />
+
+          <form action={formAction} className="mt-8 space-y-6">
             <div className="space-y-4 rounded-md shadow-sm">
               <div>
                 <label htmlFor="email" className="sr-only">Email address</label>
@@ -36,10 +38,12 @@ export default function LoginPage() {
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
                   required
-                  className="relative block w-full rounded-t-md border-0 p-2 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className={`${styles.input.base} ${styles.input.roundedTop}`}
                   placeholder="Email address"
                 />
+                <FieldError errors={state?.fieldErrors?.email} />
               </div>
               <div>
                 <label htmlFor="password" className="sr-only">Password</label>
@@ -47,19 +51,18 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
+                  autoComplete="current-password"
                   required
-                  className="relative block w-full rounded-b-md border-0 p-2 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className={`${styles.input.base} ${styles.input.roundedBottom}`}
                   placeholder="Password"
                 />
+                <FieldError errors={state?.fieldErrors?.password} />
               </div>
             </div>
 
-            <button
-              formAction={login}
-              className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-            >
+            <SubmitButton className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
               Log in
-            </button>
+            </SubmitButton>
           </form>
 
           <div className="text-center text-sm">

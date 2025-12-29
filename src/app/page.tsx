@@ -1,40 +1,17 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
+import { Navigation } from '@/src/components/navigation'
 
 export default async function LandingPage() {
   const supabase = await createClient()
-  
+
   // Check if user is already logged in
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
     <div className="min-h-screen bg-white">
       {/* --- HEADER --- */}
-      <header className="absolute inset-x-0 top-0 z-50">
-        <nav className="flex items-center justify-between p-6 lg:px-8 h-18" aria-label="Global">
-          <div className="flex lg:flex-1">
-            <a href="#" className="-m-1.5 p-1.5 font-bold text-2xl text-indigo-600">
-              SuperSaaS
-            </a>
-          </div>
-          <div className="flex flex-1 justify-end gap-x-6">
-            {user ? (
-              <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-900">
-                Go to Dashboard <span aria-hidden="true">&rarr;</span>
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">
-                  Log in
-                </Link>
-                <Link href="/signup" className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
-                  Sign up
-                </Link>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
+      <Navigation showAuthButtons user={user} />
 
       {/* --- HERO SECTION --- */}
       <div className="relative isolate px-6 pt-14 lg:px-8">
